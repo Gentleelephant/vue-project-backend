@@ -16,10 +16,25 @@ jobs:
             go-version: 1.19
 
         - name: Build
-          run: sh build.sh
+          run: |
+            go mod download
+            go build -o vue-project-backend main.go
 
         - name: Build image
           run: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             docker build -t ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest .
             docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+
+        - name: Deploy
+          uses: appleboy/ssh-action@master
+          with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            password: ${{ secrets.SSH_PASSWORD }}
+            port: ${{ secrets.PORT }}
+            script: |
+              docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+              docker stop vue-project-backend
+              docker rm vue-project-backend
+              docker run -d --name vue-project-backend -p 12080:12080 ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest

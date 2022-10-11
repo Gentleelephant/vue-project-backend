@@ -19,6 +19,13 @@ func Start() {
 
 	r := gin.Default()
 	r.Use(middleware.Cors())
+
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+
 	r.POST("/api/login", func(c *gin.Context) {
 		var userLogin UserLogin
 		hash := sha256.New()

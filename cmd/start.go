@@ -4,6 +4,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"github.com/Gentleelephant/vue-project-backend/config"
 	"github.com/Gentleelephant/vue-project-backend/serve"
 	"github.com/spf13/cobra"
 )
@@ -35,4 +36,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// startCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	startCmd.PersistentFlags().StringVarP(&config.Filepath, "config", "c", "./config.yaml", "config file path")
 }

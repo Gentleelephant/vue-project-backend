@@ -1,0 +1,13 @@
+database:
+  host: localhost
+  port: 3306
+  user: root
+  password: root
+  database: vueproject
+server:
+  port: 12080
+log:
+  filename: ./logs/project.log
+  encoder: json
+  compress: true
+  localtime: true

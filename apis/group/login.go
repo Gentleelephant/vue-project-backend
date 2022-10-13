@@ -1,12 +1,13 @@
 package group
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
-	"fmt"
+	"errors"
 	"github.com/Gentleelephant/vue-project-backend/config"
+	"github.com/Gentleelephant/vue-project-backend/handler"
+	"github.com/Gentleelephant/vue-project-backend/handler/service"
 	"github.com/Gentleelephant/vue-project-backend/model/global"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 )
 
@@ -23,35 +24,39 @@ func Ping(c *gin.Context) {
 }
 
 func Login(c *gin.Context) {
+	var err error
 	var userLogin UserLogin
-	hash := sha256.New()
-	hash.Write([]byte("admin"))
-	sum := hash.Sum(nil)
-	password := hex.EncodeToString(sum)
-	err := c.ShouldBindJSON(&userLogin)
-	fmt.Println(userLogin.Username, password)
+	defer func() {
+		if err != nil {
+			_ = c.Error(err)
+		}
+	}()
+	err = c.ShouldBindJSON(&userLogin)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, global.Response{
-			Code:    500,
-			Status:  "error",
-			Message: "内部错误",
-			Data:    nil,
-		})
+		err = global.ErrDataBind
 		return
 	}
-	if userLogin.Username == "admin" && userLogin.Password == password {
+	ok, err := service.CheckPassword(config.DB, userLogin.Username, userLogin.Password)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = global.ErrUserNotExist
+		return
+	}
+	if ok {
+		acc, err := handler.FindAccountByUsername(config.DB, userLogin.Username)
+		if err != nil {
+			return
+		}
+		err = handler.SetSession(c.Request.Context(), config.Rdb, acc.Username, acc)
+		if err != nil {
+			return
+		}
 		c.JSON(http.StatusOK, global.Response{
 			Code:    200,
 			Status:  "success",
 			Message: "登录成功",
-			Data:    userLogin,
+			Data:    acc,
 		})
-	} else {
-		c.JSON(http.StatusUnauthorized, global.Response{
-			Code:    401,
-			Status:  "error",
-			Message: "未授权",
-			Data:    nil,
-		})
+		return
 	}
+	err = global.ErrPasswordWrong
 }

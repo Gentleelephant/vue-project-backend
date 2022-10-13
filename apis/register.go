@@ -7,6 +7,7 @@ import (
 
 func registerUserInterface(g *gin.RouterGroup) {
 	g.POST("/login", group.Login)
+	g.POST("/register", group.AccountRegister)
 }
 
 func registerInterface(g *gin.RouterGroup) {

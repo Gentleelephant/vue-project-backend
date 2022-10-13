@@ -18,6 +18,7 @@ func Start() {
 	config.Initial()
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
+	r.Use(middleware.ErrorHandler())
 	r.Use(middleware.Cors())
 
 	apis.Register(r)

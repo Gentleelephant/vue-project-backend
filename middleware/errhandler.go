@@ -1,9 +1,10 @@
 package middleware
 
 import (
+	"net/http"
+
 	"github.com/Gentleelephant/vue-project-backend/model/global"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func ErrorHandler() gin.HandlerFunc {

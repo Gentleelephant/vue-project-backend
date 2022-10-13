@@ -2,8 +2,9 @@ package handler
 
 import (
 	"context"
-	"github.com/go-redis/redis/v8"
 	"testing"
+
+	"github.com/go-redis/redis/v8"
 )
 
 func TestSetSession(t *testing.T) {

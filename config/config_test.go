@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"os"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestConfig(t *testing.T) {

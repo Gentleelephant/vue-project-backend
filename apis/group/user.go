@@ -1,12 +1,13 @@
 package group
 
 import (
+	"net/http"
+
 	"github.com/Gentleelephant/vue-project-backend/config"
 	"github.com/Gentleelephant/vue-project-backend/handler"
 	"github.com/Gentleelephant/vue-project-backend/model"
 	"github.com/Gentleelephant/vue-project-backend/model/global"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type registerAccount struct {

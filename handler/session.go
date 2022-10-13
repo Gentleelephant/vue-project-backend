@@ -3,8 +3,9 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"github.com/go-redis/redis/v8"
 	"time"
+
+	"github.com/go-redis/redis/v8"
 )
 
 func SetSession(ctx context.Context, rdb *redis.Client, key string, value any) error {

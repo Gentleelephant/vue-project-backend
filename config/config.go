@@ -2,6 +2,10 @@ package config
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"github.com/Gentleelephant/pzlog/pzlog"
 	"github.com/Gentleelephant/vue-project-backend/model"
 	"github.com/go-redis/redis/v8"
@@ -11,9 +15,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"log"
-	"os"
-	"time"
 )
 
 var (

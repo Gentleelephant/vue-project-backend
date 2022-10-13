@@ -34,7 +34,7 @@ jobs:
             password: ${{ secrets.SSH_PASSWORD }}
             port: ${{ secrets.PORT }}
             script: |
-              docker rmi ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
+              docker rmi -f ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
               docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}:latest
               docker stop vue-project-backend
               docker rm vue-project-backend

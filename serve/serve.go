@@ -20,9 +20,13 @@ func Start() {
 	r.Use(gin.Logger(), gin.Recovery())
 	r.Use(middleware.ErrorHandler())
 	r.Use(middleware.Cors())
+	r.Use(middleware.CheckSession())
 
 	apis.Register(r)
 
-	r.Run(":12080")
+	err := r.Run(":12080")
+	if err != nil {
+		return
+	}
 
 }

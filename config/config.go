@@ -120,8 +120,26 @@ func initRedis() *redis.Client {
 func createTable(db *gorm.DB) {
 	err := db.AutoMigrate(&model.Account{})
 	if err != nil {
+		Plog.Error("create table failed", zap.String("table", "accounts"), zap.Error(err))
 		return
 	}
+	err = db.AutoMigrate(&model.Menu{})
+	if err != nil {
+		return
+	}
+	err = db.AutoMigrate(&model.Role{})
+	if err != nil {
+		return
+	}
+	err = db.AutoMigrate(&model.AccountInfo{})
+	if err != nil {
+		return
+	}
+	if err != nil {
+		Plog.Error("create table failed", zap.String("table", "menus"), zap.Error(err))
+		return
+	}
+
 }
 
 func Initial() {

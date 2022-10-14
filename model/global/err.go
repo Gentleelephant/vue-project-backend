@@ -7,6 +7,9 @@ var (
 	ErrUserExist          = NewError(1003, "用户已存在", nil)
 	ErrDataBind           = NewError(1004, "数据解析绑定失败", nil)
 	ErrUsernameOrPassword = NewError(1005, "用户名或密码错误", nil)
+	ErrUserRegister       = NewError(1006, "用户注册失败", nil)
+	ErrSessionTimeout     = NewError(1007, "session超时", nil)
+	ErrSessionNotExist    = NewError(1008, "session不存在", nil)
 )
 
 type CustomError struct {

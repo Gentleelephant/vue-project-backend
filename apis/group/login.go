@@ -4,9 +4,12 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/Gentleelephant/vue-project-backend/utils"
+
 	"github.com/Gentleelephant/vue-project-backend/config"
 	"github.com/Gentleelephant/vue-project-backend/handler"
 	"github.com/Gentleelephant/vue-project-backend/handler/service"
+	"github.com/Gentleelephant/vue-project-backend/model"
 	"github.com/Gentleelephant/vue-project-backend/model/global"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -34,20 +37,22 @@ func Login(c *gin.Context) {
 	}()
 	err = c.ShouldBindJSON(&userLogin)
 	if err != nil {
-		err = global.ErrDataBind
+		err = global.NewCustomError(global.ErrDataBind, err)
 		return
 	}
 	ok, err := service.CheckPassword(config.DB, userLogin.Username, userLogin.Password)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		err = global.ErrUserNotExist
+		err = global.NewCustomError(global.ErrUserNotExist, err)
 		return
 	}
 	if ok {
-		acc, err := handler.FindAccountByUsername(config.DB, userLogin.Username)
+		sessionId := utils.RandomSession()
+		account, err := handler.FindAccountByUsername(config.DB, userLogin.Username)
+		account = account.IgnorePassword()
 		if err != nil {
 			return
 		}
-		err = handler.SetSession(c.Request.Context(), config.Rdb, acc.Username, acc)
+		err = handler.SetSession(c.Request.Context(), config.Rdb, sessionId, account)
 		if err != nil {
 			return
 		}
@@ -55,7 +60,10 @@ func Login(c *gin.Context) {
 			Code:    200,
 			Status:  "success",
 			Message: "登录成功",
-			Data:    acc,
+			Data: model.UserData{
+				SessionId: sessionId,
+				Account:   *account,
+			},
 		})
 		return
 	}

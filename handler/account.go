@@ -14,12 +14,12 @@ func FindAccountByUsername(db *gorm.DB, username string) (*model.Account, error)
 	return &account, err
 }
 
-func AddAccount(db *gorm.DB, account *model.Account) error {
+func AddAccount(db *gorm.DB, account *model.Account) (*model.Account, error) {
 	err := db.Create(account).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return account, nil
 }
 
 func AccountExistByUsername(db *gorm.DB, username string) (bool, error) {
@@ -29,4 +29,15 @@ func AccountExistByUsername(db *gorm.DB, username string) (bool, error) {
 		return false, err
 	}
 	return true, err
+}
+
+func GetRoleByAccountId(db *gorm.DB, aid int) ([]*model.Role, error) {
+	var roles []*model.Role
+	var account model.Account
+	err := db.Model(&model.Account{Aid: aid}).Preload("Roles").Find(&account).Error
+	if err != nil {
+		return nil, err
+	}
+	roles = account.Roles
+	return roles, nil
 }

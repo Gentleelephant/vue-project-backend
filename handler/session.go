@@ -19,3 +19,15 @@ func SetSession(ctx context.Context, rdb *redis.Client, key string, value any) e
 	}
 	return err
 }
+
+func GetSession(ctx context.Context, rdb *redis.Client, key string, value any) error {
+	out, err := rdb.Get(ctx, key).Result()
+	if err != nil {
+		return err
+	}
+	err = json.Unmarshal([]byte(out), value)
+	if err != nil {
+		return err
+	}
+	return err
+}

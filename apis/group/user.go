@@ -3,6 +3,8 @@ package group
 import (
 	"net/http"
 
+	"github.com/Gentleelephant/vue-project-backend/utils"
+
 	"github.com/Gentleelephant/vue-project-backend/config"
 	"github.com/Gentleelephant/vue-project-backend/handler"
 	"github.com/Gentleelephant/vue-project-backend/model"
@@ -10,38 +12,48 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type registerAccount struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-	Gender   string `json:"gender"`
-}
-
 func AccountRegister(c *gin.Context) {
-	var account registerAccount
-	err := c.ShouldBindJSON(&account)
+	var err error
+	var registerAccount model.RegisterAccount
+	defer func() {
+		if err != nil {
+			_ = c.Error(err)
+		}
+	}()
+	err = c.ShouldBindJSON(&registerAccount)
 	if err != nil {
-		c.JSON(http.StatusOK, global.Response{
-			Code:    1002,
-			Status:  "",
-			Message: "注册失败",
-			Data:    nil,
-		})
+		err = global.NewCustomError(global.ErrDataBind, err)
 		return
 	}
-	err = handler.AddAccount(config.DB, &model.Account{
-		Username: account.Username,
-		Password: account.Password,
-		Gender:   account.Gender,
-		Email:    account.Email,
+	account, err := handler.AddAccount(config.DB, &model.Account{
+		Userid:   utils.RandomUserID(),
+		Username: registerAccount.Username,
+		Password: registerAccount.Password,
+		Gender:   registerAccount.Gender,
+		Email:    registerAccount.Email,
 	})
 	if err != nil {
+		err = global.NewCustomError(global.ErrUserRegister, err)
 		return
 	}
 	c.JSON(http.StatusOK, global.Response{
 		Code:    200,
 		Status:  "success",
 		Message: "注册成功",
-		Data:    nil,
+		Data:    account.IgnorePassword(),
 	})
+}
+
+func GetRouter(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			_ = c.Error(err)
+		}
+	}()
+
+	if err != nil {
+		err = global.NewCustomError(global.ErrDataBind, err)
+	}
+
 }

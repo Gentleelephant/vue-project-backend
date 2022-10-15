@@ -4,6 +4,7 @@ database:
   username: "root"
   password: "root"
   dbname: "vueproject"
+  autoMigrate: false
 
 server:
   port: 12080

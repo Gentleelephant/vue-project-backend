@@ -6,12 +6,13 @@ import (
 )
 
 func registerUserInterface(g *gin.RouterGroup) {
-	g.POST("/login", group.Login)
+	//g.POST("/login", group.Login)
 	g.POST("/register", group.AccountRegister)
 }
 
 func registerInterface(g *gin.RouterGroup) {
 	g.GET("/ping", group.Ping)
+	g.GET("/router", group.GetRouter)
 }
 
 func Register(engine *gin.Engine) {

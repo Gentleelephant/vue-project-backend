@@ -20,7 +20,7 @@ func Start() {
 	r.Use(gin.Logger(), gin.Recovery())
 	r.Use(middleware.ErrorHandler())
 	r.Use(middleware.Cors())
-	r.Use(middleware.CheckSession())
+	//r.Use(middleware.CheckSession())
 
 	apis.Register(r)
 

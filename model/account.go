@@ -3,8 +3,8 @@ package model
 // Account is a struct that represents a user account.
 type Account struct {
 	Aid         int         `json:"aid" gorm:"primary_key;autoIncrement"`
-	Userid      string      `json:"userid" gorm:"type:varchar(36);uniqueIndex"`
-	Username    string      `json:"username" gorm:"type:varchar(36);not null;unique"`
+	Userid      string      `json:"userid" gorm:"type:varchar(36);unique;not null;uniqueIndex"`
+	Username    string      `json:"username" gorm:"type:varchar(36);not null;unique;uniqueIndex"`
 	Password    string      `json:"-" gorm:"type:varchar(256);not null"`
 	Gender      string      `json:"gender"   gorm:"type:varchar(10);not null;default:'男'"`
 	Email       string      `json:"email" gorm:"type:varchar(36)"`

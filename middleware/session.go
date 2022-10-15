@@ -3,7 +3,7 @@ package middleware
 import (
 	"strings"
 
-	"github.com/Gentleelephant/vue-project-backend/model/global"
+	"github.com/Gentleelephant/vue-project-backend/common/global"
 
 	"github.com/Gentleelephant/vue-project-backend/config"
 	"github.com/Gentleelephant/vue-project-backend/handler"
@@ -28,6 +28,11 @@ func CheckSession() gin.HandlerFunc {
 			return
 		}
 		if strings.HasPrefix("/api/register", path) && method == "POST" {
+			c.Next()
+			return
+		}
+
+		if strings.HasPrefix("/router", path) && method == "GET" {
 			c.Next()
 			return
 		}

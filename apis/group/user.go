@@ -3,12 +3,14 @@ package group
 import (
 	"net/http"
 
-	"github.com/Gentleelephant/vue-project-backend/utils"
+	"github.com/Gentleelephant/vue-project-backend/common"
+
+	global2 "github.com/Gentleelephant/vue-project-backend/common/global"
+	"github.com/Gentleelephant/vue-project-backend/common/utils"
 
 	"github.com/Gentleelephant/vue-project-backend/config"
 	"github.com/Gentleelephant/vue-project-backend/handler"
 	"github.com/Gentleelephant/vue-project-backend/model"
-	"github.com/Gentleelephant/vue-project-backend/model/global"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,7 +24,7 @@ func AccountRegister(c *gin.Context) {
 	}()
 	err = c.ShouldBindJSON(&registerAccount)
 	if err != nil {
-		err = global.NewCustomError(global.ErrDataBind, err)
+		err = global2.NewCustomError(global2.ErrDataBind, err)
 		return
 	}
 	account, err := handler.AddAccount(config.DB, &model.Account{
@@ -33,10 +35,10 @@ func AccountRegister(c *gin.Context) {
 		Email:    registerAccount.Email,
 	})
 	if err != nil {
-		err = global.NewCustomError(global.ErrUserRegister, err)
+		err = global2.NewCustomError(global2.ErrUserRegister, err)
 		return
 	}
-	c.JSON(http.StatusOK, global.Response{
+	c.JSON(http.StatusOK, global2.Response{
 		Code:    200,
 		Status:  "success",
 		Message: "注册成功",
@@ -52,8 +54,22 @@ func GetRouter(c *gin.Context) {
 		}
 	}()
 
+	var params common.QueryAccountParams
+	err = c.ShouldBindQuery(&params)
 	if err != nil {
-		err = global.NewCustomError(global.ErrDataBind, err)
+		err = global2.NewCustomError(global2.ErrDataBind, err)
 	}
+
+	menu, err := handler.GetMenuByAccount(config.DB, &params)
+	router := model.ArrayToTree(menu)
+	if err != nil {
+		return
+	}
+	c.JSON(http.StatusOK, global2.Response{
+		Code:    200,
+		Status:  "success",
+		Message: "成功",
+		Data:    router,
+	})
 
 }

@@ -55,11 +55,12 @@ type Config struct {
 }
 
 type Database struct {
-	Host     string `json:"host"`
-	Port     string `json:"port"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	DBname   string `json:"dbname"`
+	Host        string `json:"host" yaml:"host"`
+	Port        string `json:"port" yaml:"port"`
+	Username    string `json:"username" yaml:"username"`
+	Password    string `json:"password" yaml:"password"`
+	DBname      string `json:"dbname" yaml:"dbname"`
+	AutoMigrate bool   `json:"autoMigrate" yaml:"autoMigrate"` // 是否自动创建数据库
 }
 
 type Server struct {
@@ -87,10 +88,10 @@ func initDB() *gorm.DB {
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer（日志输出的目标，前缀和日志包含的内容——译者注）
 		logger.Config{
-			SlowThreshold:             time.Second,   // 慢 SQL 阈值
-			LogLevel:                  logger.Silent, // 日志级别
-			IgnoreRecordNotFoundError: true,          // 忽略ErrRecordNotFound（记录未找到）错误
-			Colorful:                  false,         // 禁用彩色打印
+			SlowThreshold:             time.Millisecond * 200, // 慢 SQL 阈值
+			LogLevel:                  logger.Info,            // 日志级别
+			IgnoreRecordNotFoundError: true,                   // 忽略ErrRecordNotFound（记录未找到）错误
+			Colorful:                  false,                  // 禁用彩色打印
 		},
 	)
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
@@ -118,19 +119,23 @@ func initRedis() *redis.Client {
 }
 
 func createTable(db *gorm.DB) {
+	Plog.Info("create table", zap.String("table", "accounts"))
 	err := db.AutoMigrate(&model.Account{})
 	if err != nil {
 		Plog.Error("create table failed", zap.String("table", "accounts"), zap.Error(err))
 		return
 	}
+	Plog.Info("create table", zap.String("table", "menus"))
 	err = db.AutoMigrate(&model.Menu{})
 	if err != nil {
 		return
 	}
+	Plog.Info("create table", zap.String("table", "roles"))
 	err = db.AutoMigrate(&model.Role{})
 	if err != nil {
 		return
 	}
+	Plog.Info("create table", zap.String("table", "account_infos"))
 	err = db.AutoMigrate(&model.AccountInfo{})
 	if err != nil {
 		return
@@ -153,6 +158,8 @@ func Initial() {
 		Encoder:      ProjectConfig.LogConfig.Encoder,
 	})
 	DB = initDB()
-	createTable(DB)
+	if ProjectConfig.Database.AutoMigrate {
+		createTable(DB)
+	}
 	Rdb = initRedis()
 }

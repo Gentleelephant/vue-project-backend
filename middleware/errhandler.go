@@ -3,7 +3,8 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/Gentleelephant/vue-project-backend/model/global"
+	global2 "github.com/Gentleelephant/vue-project-backend/common/global"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,8 +19,8 @@ func ErrorHandler() gin.HandlerFunc {
 		// 检查一个错误就行
 		for _, e := range c.Errors {
 			err := e.Err
-			if myErr, ok := err.(*global.CustomError); ok {
-				c.JSON(http.StatusOK, global.Response{
+			if myErr, ok := err.(*global2.CustomError); ok {
+				c.JSON(http.StatusOK, global2.Response{
 					Code:    myErr.Code,
 					Status:  "error",
 					Message: myErr.Message,
@@ -27,7 +28,7 @@ func ErrorHandler() gin.HandlerFunc {
 				})
 				return
 			} else {
-				c.JSON(500, global.Response{
+				c.JSON(500, global2.Response{
 					Code:    500,
 					Status:  "error",
 					Message: err.Error(),

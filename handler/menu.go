@@ -1,14 +1,18 @@
 package handler
 
 import (
+	"github.com/Gentleelephant/vue-project-backend/common"
 	"github.com/Gentleelephant/vue-project-backend/model"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
-func GetMenuByAccountId(db *gorm.DB, aid int) ([]*model.Menu, error) {
+func GetMenuByAccount(db *gorm.DB, params *common.QueryAccountParams) ([]*model.Menu, error) {
 	var account model.Account
-	err := db.Debug().Where(&model.Account{Aid: aid}).Preload("Roles.Menus").Preload(clause.Associations).Find(&account).Error
+	err := db.Where(&model.Account{
+		Aid:      params.Aid,
+		Userid:   params.Userid,
+		Username: params.Username,
+	}).Preload("Roles.Menus").Preload("Roles").Find(&account).Error
 	if err != nil {
 		return nil, err
 	}
